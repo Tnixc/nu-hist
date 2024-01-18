@@ -3,6 +3,8 @@
 use rusqlite::{ Connection, Result };
 use rand::Rng;
 use std::process;
+use chrono::*;
+
 pub struct Config {
   pub path: String,
   pub analysis: String,
@@ -10,7 +12,9 @@ pub struct Config {
 impl Config {
   pub fn new(args: &[String]) -> Result<Config> {
     if args.len() < 3 {
-      eprintln!("Not enough arguments: nu-hist [path to history.sqlite3 file] [year as number | 'all']");
+      eprintln!(
+        "Not enough arguments: nu-hist [path to history.sqlite3 file] [year as number | 'all']"
+      );
       process::exit(1);
     }
     let path = args[1].clone();
@@ -18,16 +22,28 @@ impl Config {
     return Ok(Config { path, analysis });
   }
 }
+
 pub fn year(conn: Connection, year: String) -> Result<()> {
+  let year: i32 = year.to_string().parse::<i32>().unwrap();
   let mut content: rusqlite::Statement<'_> = conn.prepare("select * from history")?;
   let mut rows = content.query([])?;
+
   while let Some(row) = rows.next()? {
-    let time: i64 = row.get(2)?;
-    let command: String = row.get(1)?;
+    let _time: i64 = row.get(2)?;
+    let _command: String = row.get(1)?;
     // println!("{}: {:?}", time, command);
   }
   println!("Year: {}", year);
+  year_to_unix(year);
   return Ok(());
+}
+
+fn year_to_unix(year: i32) -> (i64, i64) {
+  let start = Utc.with_ymd_and_hms(year, 01, 01, 00, 00, 00);
+  let end = Utc.with_ymd_and_hms(year, 12, 31, 23, 59, 59);
+  println!("Start: {}", start.unwrap());
+  println!("End: {}", end.unwrap());
+  return (0, 0);
 }
 
 pub fn all(conn: Connection) -> Result<()> {
