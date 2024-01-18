@@ -25,35 +25,40 @@ impl Config {
 
 pub fn year(conn: Connection, year: String) -> Result<()> {
   let year: i32 = year.to_string().parse::<i32>().unwrap();
+  let (start, end) = year_to_unix(year);
+
   let mut content: rusqlite::Statement<'_> = conn.prepare("select * from history")?;
   let mut rows = content.query([])?;
 
+  let mut arr: Vec<(i64, String)> = Vec::new();
   while let Some(row) = rows.next()? {
-    let _time: i64 = row.get(2)?;
-    let _command: String = row.get(1)?;
-    // println!("{}: {:?}", time, command);
+    let time: i64 = row.get(2)?;
+    let command: String = row.get(1)?;
+    if start <= time && time <= end {
+      arr.push((time, command));
+    }
   }
   println!("Year: {}", year);
-  year_to_unix(year);
+  println!("Total commands: {}", arr.len());
   return Ok(());
 }
 
 fn year_to_unix(year: i32) -> (i64, i64) {
-  let start = Utc.with_ymd_and_hms(year, 01, 01, 00, 00, 00);
-  let end = Utc.with_ymd_and_hms(year, 12, 31, 23, 59, 59);
-  println!("Start: {}", start.unwrap());
-  println!("End: {}", end.unwrap());
-  return (0, 0);
+  let start = Utc.with_ymd_and_hms(year, 01, 01, 00, 00, 00).unwrap().timestamp();
+  let end = Utc.with_ymd_and_hms(year, 12, 31, 23, 59, 59).unwrap().timestamp();
+  return (start, end);
 }
 
 pub fn all(conn: Connection) -> Result<()> {
   let mut content: rusqlite::Statement<'_> = conn.prepare("select * from history")?;
   let mut rows = content.query([])?;
+  let mut arr: Vec<(i64, String)> = Vec::new();
   while let Some(row) = rows.next()? {
     let time: i64 = row.get(2)?;
     let command: String = row.get(1)?;
-    println!("{}: {:?}", time, command);
+    arr.push((time, command));
   }
+  println!("Total commands: {}", arr.len());
   return Ok(());
 }
 
