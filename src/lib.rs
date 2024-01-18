@@ -10,7 +10,7 @@ pub struct Config {
 impl Config {
   pub fn new(args: &[String]) -> Result<Config> {
     if args.len() < 3 {
-      eprintln!("Arguents: nu-hist [path to history.sqlite3 file] [year as number | 'all']");
+      eprintln!("Not enough arguments: nu-hist [path to history.sqlite3 file] [year as number | 'all']");
       process::exit(1);
     }
     let path = args[1].clone();
