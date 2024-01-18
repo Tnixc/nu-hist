@@ -56,7 +56,7 @@ pub fn top_ten_dur(conn: &Connection, start: i64, end: i64) -> Result<()> {
   while let Some(row) = rows.next()? {
     let a: String = row.get(0)?;
     let b: String = row.get(1)?;
-    println!("{} - {}: {}", i+1, a, b);
+    println!("{} - {}: {}", i + 1, a, b);
     i = i + 1;
     arr.push((a, b));
   }
