@@ -27,16 +27,15 @@ pub fn year(conn: Connection, year: String) -> Result<()> {
   let year: i32 = year.to_string().parse::<i32>().unwrap();
   let (start, end) = year_to_unix(year);
 
-  let mut content: rusqlite::Statement<'_> = conn.prepare("select * from history")?;
-  let mut rows = content.query([])?;
+  let mut content: rusqlite::Statement<'_> = conn.prepare(
+    "select * from history where start_timestamp >= ?1 AND start_timestamp <= ?2"
+  )?;
+  let mut rows = content.query([start, end])?;
 
-  let mut arr: Vec<(i64, String)> = Vec::new();
+  let mut arr: Vec<String> = Vec::new();
   while let Some(row) = rows.next()? {
-    let time: i64 = row.get(2)?;
     let command: String = row.get(1)?;
-    if start <= time && time <= end {
-      arr.push((time, command));
-    }
+    arr.push(command);
   }
 
   let _ = top_ten_dur(&conn, start, end);
@@ -48,7 +47,17 @@ pub fn year(conn: Connection, year: String) -> Result<()> {
 
 pub fn top_ten_dur(conn: &Connection, start: i64, end: i64) -> Result<()> {
   let mut content: rusqlite::Statement<'_> = conn.prepare(
-    "SELECT command_line, CAST(count(*) AS VARCHAR) AS count FROM history WHERE start_timestamp >= ?1 AND start_timestamp <= ?2 GROUP BY command_line ORDER BY CAST(count(*) AS INTEGER) DESC LIMIT 10"
+    "SELECT
+    CASE WHEN instr(command_line, ' ') > 0
+        THEN substr(command_line, 1, instr(command_line, ' ') - 1)
+        ELSE command_line
+    END AS first_word,
+    CAST(count(*) AS VARCHAR) AS count
+FROM history
+WHERE start_timestamp >= ?1 AND start_timestamp <= ?2
+GROUP BY first_word
+ORDER BY CAST(count(*) AS INTEGER) DESC
+LIMIT 10;"
   )?;
   let mut rows = content.query([start, end])?;
   let mut arr: Vec<(String, String)> = Vec::new();
@@ -65,16 +74,12 @@ pub fn top_ten_dur(conn: &Connection, start: i64, end: i64) -> Result<()> {
 
 pub fn all(conn: Connection) -> Result<()> {
   let _ = top_ten_dur(&conn, 0, i64::MAX);
-  let mut content: rusqlite::Statement<'_> = conn.prepare("select * from history")?;
+  let mut content: rusqlite::Statement<'_> = conn.prepare("SELECT COUNT(*) from history")?;
   let mut rows = content.query([])?;
-  let mut arr: Vec<(i64, String)> = Vec::new();
-  while let Some(row) = rows.next()? {
-    let time: i64 = row.get(2)?;
-    let command: String = row.get(1)?;
-    // println!("{}: {}", time, command);
-    arr.push((time, command));
+  if let Some(row) = rows.next()? {
+    let len: i64 = row.get(0)?;
+    println!("Total commands: {}", len);
   }
-  println!("Total commands: {}", arr.len());
   return Ok(());
 }
 
