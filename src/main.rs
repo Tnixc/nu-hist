@@ -17,6 +17,10 @@ fn main() -> Result<()> {
   if !path.exists() {
     eprintln!("{color_red}{style_bold}File does not exist: {style_reset}{color_reset}{}", config.path);
     process::exit(1);
+  } else if check_table(path).is_err() {
+    eprintln!("{color_red}{style_bold}Invalid file: {style_reset}{color_reset}{}", config.path);
+    process::exit(1);
+
   } else if config.analysis == "all" {
     let conn: Connection = Connection::open(&config.path)?;
     nu_hist::all(conn)?;
@@ -28,4 +32,20 @@ fn main() -> Result<()> {
     process::exit(1);
   }
   return Ok(());
+}
+
+fn check_table(path: &Path) -> Result<()> {
+  let conn = Connection::open(path)?;
+  let mut content: rusqlite::Statement<'_> = conn.prepare(
+    "SELECT name FROM sqlite_master WHERE type='table' AND name='history'"
+  )?;
+  let mut rows = content.query([])?;
+  if let Some(row) = rows.next()? {
+    let name: String = row.get(0)?;
+    if name == "history" {
+      return Ok(());
+    }
+  }
+  eprintln!("{color_red}{style_bold}No history table found in file: {style_reset}{color_reset}{}", &path.display());
+  process::exit(1);
 }
