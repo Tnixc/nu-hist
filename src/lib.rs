@@ -1,7 +1,7 @@
 #![deny(clippy::implicit_return)]
 #![allow(clippy::needless_return)]
 use rusqlite::{ Connection, Result };
-use rand::Rng;
+// use rand::Rng;
 use std::process;
 use chrono::*;
 use inline_colorization::*;
