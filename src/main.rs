@@ -15,7 +15,7 @@ fn main() -> Result<()> {
 
   let path = Path::new(&config.path);
   if !path.exists() {
-    eprintln!("{color_red}File does not exist: {}", config.path);
+    eprintln!("{color_red}{style_bold}File does not exist: {style_reset}{color_reset}{}", config.path);
     process::exit(1);
   } else if config.analysis == "all" {
     let conn: Connection = Connection::open(&config.path)?;
@@ -24,7 +24,7 @@ fn main() -> Result<()> {
     let conn: Connection = Connection::open(&config.path)?;
     nu_hist::year(conn, config.analysis)?;
   } else {
-    eprintln!("Invalid year: {}", config.analysis);
+    eprintln!("{color_red}{style_bold}Invalid year: {style_reset}{color_reset}{}", config.analysis);
     process::exit(1);
   }
   return Ok(());

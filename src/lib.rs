@@ -4,6 +4,7 @@ use rusqlite::{ Connection, Result };
 use rand::Rng;
 use std::process;
 use chrono::*;
+use inline_colorization::*;
 
 pub struct Config {
   pub path: String,
@@ -13,7 +14,7 @@ impl Config {
   pub fn new(args: &[String]) -> Result<Config> {
     if args.len() < 3 {
       eprintln!(
-        "Not enough arguments: nu-hist [path to history.sqlite3 file] [year as number | 'all']"
+        "{color_red}{style_bold}Not enough arguments: {style_reset}{color_reset}nu-hist [path to history.sqlite3 file] [year as number | 'all']"
       );
       process::exit(1);
     }
