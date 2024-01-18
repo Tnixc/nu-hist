@@ -25,5 +25,5 @@ fn main() -> Result<()> {
     eprintln!("Invalid year: {}", config.analysis);
     process::exit(1);
   }
-  return Ok(())
+  return Ok(());
 }

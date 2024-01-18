@@ -15,7 +15,7 @@ impl Config {
     }
     let path = args[1].clone();
     let analysis = args[2].clone();
-    return Ok(Config { path, analysis })
+    return Ok(Config { path, analysis });
   }
 }
 pub fn year(conn: Connection, year: String) -> Result<()> {
@@ -27,7 +27,7 @@ pub fn year(conn: Connection, year: String) -> Result<()> {
     // println!("{}: {:?}", time, command);
   }
   println!("Year: {}", year);
-  return Ok(())
+  return Ok(());
 }
 
 pub fn all(conn: Connection) -> Result<()> {
@@ -38,9 +38,8 @@ pub fn all(conn: Connection) -> Result<()> {
     let command: String = row.get(1)?;
     println!("{}: {:?}", time, command);
   }
-  return Ok(())
+  return Ok(());
 }
-
 
 pub fn rand_string(len: usize, chars: &str) -> String {
   let mut rng = rand::thread_rng();
@@ -66,6 +65,5 @@ pub fn fill_data(conn: &Connection) -> Result<()> {
       [&command, &time, &hostname]
     )?;
   }
-  return Ok(())
+  return Ok(());
 } // Haha this is just for side effects
-
