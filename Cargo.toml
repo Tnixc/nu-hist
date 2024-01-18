@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 chrono = "0.4.31"
+comfy-table = "7.1.0"
 inline_colorization = "0.1.6"
 rand = "0.8.5"
 rusqlite = "0.30.0"
