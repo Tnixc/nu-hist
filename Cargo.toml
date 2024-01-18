@@ -2,6 +2,12 @@
 name = "nu-hist"
 version = "0.1.0"
 edition = "2021"
+authors = ["tnixxc@gmail.com"]
+description = "A simple script to read the .sqlite3 file of nushell's history and display stats"
+repository = "https://github.com/tnixc/nu-hist"
+readme = "readme.md"
+categories = ["visualization"]
+keywords = ["nushell"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -11,3 +17,4 @@ comfy-table = "7.1.0"
 inline_colorization = "0.1.6"
 rand = "0.8.5"
 rusqlite = "0.30.0"
+
