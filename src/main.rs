@@ -7,20 +7,20 @@ use inline_colorization::*;
 fn main() -> Result<()> {
   let args: Vec<String> = std::env::args().collect();
   let config = nu_hist::Config::new(&args).unwrap_or_else(|err| {
-    eprintln!("{color_red}Problem parsing arguments: {}", 
-    err
-  );
+    eprintln!("{color_red}Problem parsing arguments: {}", err);
     process::exit(1);
   });
 
   let path = Path::new(&config.path);
   if !path.exists() {
-    eprintln!("{color_red}{style_bold}File does not exist: {style_reset}{color_reset}{}", config.path);
+    eprintln!(
+      "{color_red}{style_bold}File does not exist: {style_reset}{color_reset}{}",
+      config.path
+    );
     process::exit(1);
   } else if check_table(path).is_err() {
     eprintln!("{color_red}{style_bold}Invalid file: {style_reset}{color_reset}{}", config.path);
     process::exit(1);
-
   } else if config.analysis == "all" {
     let conn: Connection = Connection::open(&config.path)?;
     nu_hist::all(conn)?;
@@ -46,6 +46,9 @@ fn check_table(path: &Path) -> Result<()> {
       return Ok(());
     }
   }
-  eprintln!("{color_red}{style_bold}No history table found in file: {style_reset}{color_reset}{}", &path.display());
+  eprintln!(
+    "{color_red}{style_bold}No history table found in file: {style_reset}{color_reset}{}",
+    &path.display()
+  );
   process::exit(1);
 }
