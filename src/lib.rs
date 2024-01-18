@@ -1,5 +1,23 @@
+#![deny(clippy::implicit_return)]
+#![allow(clippy::needless_return)]
 use rusqlite::{ Connection, Result };
 use rand::Rng;
+
+pub struct Config {
+  pub path: String,
+  pub analysis: String,
+}
+impl Config {
+  pub fn new(args: &[String]) -> Result<Config> {
+    if args.len() < 3 {
+      panic!("Not enough arguments");
+    }
+    let path = args[1].clone();
+    let analysis = args[2].clone();
+    return Ok(Config { path, analysis })
+  }
+}
+
 
 pub fn rand_string(len: usize, chars: &str) -> String {
   let mut rng = rand::thread_rng();
@@ -22,8 +40,8 @@ pub fn fill_data(conn: &Connection) -> Result<()> {
       .to_string();
     conn.execute(
       "insert into history (command_line, start_timestamp, hostname) values (?1, ?2, ?3)",
-      &[&command, &time, &hostname]
+      [&command, &time, &hostname]
     )?;
   }
-  Ok(())
-}
+  return Ok(())
+} // Haha this is just for side effects
