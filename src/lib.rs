@@ -17,7 +17,16 @@ impl Config {
     return Ok(Config { path, analysis })
   }
 }
-
+pub fn year(conn: Connection) -> Result<()> {
+  let mut content: rusqlite::Statement<'_> = conn.prepare("select * from history")?;
+  let mut rows = content.query([])?;
+  while let Some(row) = rows.next()? {
+    let time: i64 = row.get(2)?;
+    let command: String = row.get(1)?;
+    println!("{}: {:?}", time, command);
+  }
+  return Ok(())
+}
 
 pub fn rand_string(len: usize, chars: &str) -> String {
   let mut rng = rand::thread_rng();
@@ -45,3 +54,4 @@ pub fn fill_data(conn: &Connection) -> Result<()> {
   }
   return Ok(())
 } // Haha this is just for side effects
+
