@@ -1,7 +1,7 @@
 #![deny(clippy::implicit_return)]
 #![allow(clippy::needless_return)]
 use rusqlite::{ Connection, Result };
-use std::process;
+use std::{process, num::ParseIntError};
 
 // /Users/tnixc/Library/Application Support/nushell/history.sqlite3
 fn main() -> Result<()> {
@@ -11,6 +11,15 @@ fn main() -> Result<()> {
     process::exit(1);
   });
   let conn: Connection = Connection::open(&config.path)?;
-  nu_hist::year(conn)?;
+  if config.analysis == "all" {
+    let conn: Connection = Connection::open(&config.path)?;
+    nu_hist::all(conn)?;
+  } else if let Ok(year) = config.analysis.parse::<i32>() {
+    let conn: Connection = Connection::open(&config.path)?;
+    nu_hist::year(conn, config.analysis)?;
+  } else {
+    eprintln!("Invalid year: {}", config.analysis);
+    process::exit(1);
+  }
   return Ok(())
 }

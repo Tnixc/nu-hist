@@ -18,7 +18,19 @@ impl Config {
     return Ok(Config { path, analysis })
   }
 }
-pub fn year(conn: Connection) -> Result<()> {
+pub fn year(conn: Connection, year: String) -> Result<()> {
+  let mut content: rusqlite::Statement<'_> = conn.prepare("select * from history")?;
+  let mut rows = content.query([])?;
+  while let Some(row) = rows.next()? {
+    let time: i64 = row.get(2)?;
+    let command: String = row.get(1)?;
+    // println!("{}: {:?}", time, command);
+  }
+  println!("Year: {}", year);
+  return Ok(())
+}
+
+pub fn all(conn: Connection) -> Result<()> {
   let mut content: rusqlite::Statement<'_> = conn.prepare("select * from history")?;
   let mut rows = content.query([])?;
   while let Some(row) = rows.next()? {
@@ -28,6 +40,7 @@ pub fn year(conn: Connection) -> Result<()> {
   }
   return Ok(())
 }
+
 
 pub fn rand_string(len: usize, chars: &str) -> String {
   let mut rng = rand::thread_rng();
