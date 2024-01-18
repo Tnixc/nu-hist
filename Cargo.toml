@@ -8,6 +8,7 @@ repository = "https://github.com/tnixc/nu-hist"
 readme = "readme.md"
 categories = ["visualization"]
 keywords = ["nushell"]
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
