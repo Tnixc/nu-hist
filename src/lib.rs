@@ -66,7 +66,7 @@ LIMIT 10;"
     let a: String = row.get(0)?;
     let b: String = row.get(1)?;
     println!("{} - {}: {}", i + 1, a, b);
-    i = i + 1;
+    i += 1;
     arr.push((a, b));
   }
   return Ok(());
@@ -84,7 +84,7 @@ pub fn all(conn: Connection) -> Result<()> {
 }
 
 fn year_to_unix(year: i32) -> (i64, i64) {
-  let start = Utc.with_ymd_and_hms(year, 01, 01, 00, 00, 00).unwrap().timestamp();
+  let start = Utc.with_ymd_and_hms(year, 1, 1, 00, 00, 00).unwrap().timestamp();
   let end = Utc.with_ymd_and_hms(year, 12, 31, 23, 59, 59).unwrap().timestamp();
   return (start * 1000, end * 1000);
 }
