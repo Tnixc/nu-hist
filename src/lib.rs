@@ -43,23 +43,42 @@ pub fn year(conn: Connection, year: String) -> Result<()> {
   return Ok(());
 }
 
-fn year_to_unix(year: i32) -> (i64, i64) {
-  let start = Utc.with_ymd_and_hms(year, 01, 01, 00, 00, 00).unwrap().timestamp();
-  let end = Utc.with_ymd_and_hms(year, 12, 31, 23, 59, 59).unwrap().timestamp();
-  return (start, end);
+pub fn top_ten_dur(conn: &Connection, start: i64, end: i64) -> Result<()> {
+  let mut content: rusqlite::Statement<'_> = conn.prepare(
+    "SELECT command_line, CAST(count(*) AS VARCHAR) AS count FROM history WHERE start_timestamp >= ?1 AND start_timestamp <= ?2 GROUP BY command_line ORDER BY CAST(count(*) AS VARCHAR) DESC LIMIT 10"
+  )?;
+  let mut rows = content.query([start, end])?;
+  let mut arr: Vec<(String, String)> = Vec::new();
+  let mut i = 0;
+  while let Some(row) = rows.next()? {
+    let a: String = row.get(0)?;
+    let b: String = row.get(1)?;
+    println!("{} - {}: {}", i+1, a, b);
+    i = i + 1;
+    arr.push((a, b));
+  }
+  return Ok(());
 }
 
 pub fn all(conn: Connection) -> Result<()> {
+  let _ = top_ten_dur(&conn, 0, i64::MAX);
   let mut content: rusqlite::Statement<'_> = conn.prepare("select * from history")?;
   let mut rows = content.query([])?;
   let mut arr: Vec<(i64, String)> = Vec::new();
   while let Some(row) = rows.next()? {
     let time: i64 = row.get(2)?;
     let command: String = row.get(1)?;
+    // println!("{}: {}", time, command);
     arr.push((time, command));
   }
   println!("Total commands: {}", arr.len());
   return Ok(());
+}
+
+fn year_to_unix(year: i32) -> (i64, i64) {
+  let start = Utc.with_ymd_and_hms(year, 01, 01, 00, 00, 00).unwrap().timestamp();
+  let end = Utc.with_ymd_and_hms(year, 12, 31, 23, 59, 59).unwrap().timestamp();
+  return (start, end);
 }
 
 pub fn rand_string(len: usize, chars: &str) -> String {
