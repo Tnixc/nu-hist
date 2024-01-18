@@ -2,7 +2,7 @@
 #![allow(clippy::needless_return)]
 use rusqlite::{ Connection, Result };
 use rand::Rng;
-
+use std::process;
 pub struct Config {
   pub path: String,
   pub analysis: String,
@@ -10,7 +10,8 @@ pub struct Config {
 impl Config {
   pub fn new(args: &[String]) -> Result<Config> {
     if args.len() < 3 {
-      panic!("Not enough arguments");
+      eprintln!("Arguents: nu-hist [path to history.sqlite3 file] [year as number | 'all']");
+      process::exit(1);
     }
     let path = args[1].clone();
     let analysis = args[2].clone();
