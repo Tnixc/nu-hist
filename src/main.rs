@@ -4,6 +4,7 @@ use rusqlite::{ Connection, Result };
 use std::process;
 use std::path::Path;
 use inline_colorization::*;
+
 fn main() -> Result<()> {
   let args: Vec<String> = std::env::args().collect();
   let config = nu_hist::Config::new(&args).unwrap_or_else(|err| {
